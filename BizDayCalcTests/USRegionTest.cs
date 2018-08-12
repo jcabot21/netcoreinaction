@@ -1,25 +1,32 @@
 using System;
 using BizDayCalc;
 using Xunit;
+using Xunit.Abstractions; // source for ITestOutputHelper
 
 namespace BizDayCalcTests
 {
     public class USRegionTest : IClassFixture<USRegionFixture>
     {
         private readonly USRegionFixture _fixture;
+        private readonly ITestOutputHelper _output; // Xunit logger
 
         // constructor will we called for each test
         // but fixture will only be created once
-        public USRegionTest(USRegionFixture fixture)
+        public USRegionTest(USRegionFixture fixture, ITestOutputHelper output) 
         {
             _fixture = fixture;
+            _output = output;  // Injected automagically by Xunit
         }
 
         [Theory]
         [InlineData("2016-01-01")]
         [InlineData("2016-12-25")]
-        public void TestHolidays(string date) => 
+        public void TestHolidays(string date) 
+        {
+            // Will log when test fails
+            _output.WriteLine($@"{nameof(TestHolidays)}(""{date}"")");
             Assert.False(_fixture.Calc.IsBusinessDay(DateTime.Parse(date)));
+        }
 
         [Theory]
         [InlineData("2016-02-29")]
