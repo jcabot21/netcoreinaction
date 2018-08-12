@@ -21,6 +21,7 @@ namespace BizDayCalcTests
         [Theory]
         [InlineData("2016-01-01")]
         [InlineData("2016-12-25")]
+        [Trait("Holiday", "true")] // Used from cmd 'dotnet test --filter Holiday=true'
         public void TestHolidays(string date) 
         {
             // Will log when test fails
@@ -31,6 +32,7 @@ namespace BizDayCalcTests
         [Theory]
         [InlineData("2016-02-29")]
         [InlineData("2016-01-04")]
+        [Trait("Holiday", "true")] // Used from cmd 'dotnet test --filter Holiday=true'
         public void TestNonHolidays(string date) => 
             Assert.True(_fixture.Calc.IsBusinessDay(DateTime.Parse(date)));
     }
