@@ -22,10 +22,27 @@ namespace SqliteScmTest
         }
 
         [Fact]
-        public void ReadDataTest()
+        public void ReadPartDataTest()
         {
             Assert.Single(_context.Parts);
-            Assert.Equal("8289 L-shaped plate", _context.Parts.First().Name);
+
+            var part = _context.Parts.First();
+
+            Assert.Equal("8289 L-shaped plate", part.Name);
+            Assert.Equal(1, part.Id);
+        }
+
+        [Fact]
+        public void ReadInventoryDataTest()
+        {
+            Assert.Single(_context.Inventory);
+            
+            var part = _context.Parts.First();
+            var inventory = _context.Inventory.First();
+
+            Assert.Equal(part.Id, inventory.ParTypeId);
+            Assert.Equal(100, inventory.Count);
+            Assert.Equal(10, inventory.OrderThreshold);
         }
     }
 }
