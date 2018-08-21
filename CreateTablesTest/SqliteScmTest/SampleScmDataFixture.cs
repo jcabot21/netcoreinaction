@@ -54,7 +54,7 @@ namespace SqliteScmTest
 
         public void Dispose()
         {
-            if (Connection !=null)
+            if (Connection != null)
             {
                 Connection.Dispose();
             }
