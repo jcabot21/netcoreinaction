@@ -11,11 +11,11 @@ namespace WidgetScmDataAccess
         public int PartCount { get; set; }
 
         public PartCountOperation Command { get; set; }
+    }
 
-        public enum PartCountOperation
-        {
-            Add,
-            Remove
-        }
+    public enum PartCountOperation
+    {
+        Add,
+        Remove
     }
 }

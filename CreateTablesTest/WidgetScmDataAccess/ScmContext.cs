@@ -12,9 +12,11 @@ namespace WidgetScmDataAccess
         private readonly DbConnection _connection;
         private readonly Lazy<IEnumerable<PartType>> _parts;
         private readonly Lazy<IEnumerable<InventoryItem>> _inventory;
+        private readonly Lazy<IEnumerable<PartCommand>> _commands;
 
         public IEnumerable<PartType> Parts => _parts.Value;
         public IEnumerable<InventoryItem> Inventory => _inventory.Value;
+        public IEnumerable<PartCommand> Commands => _commands.Value;
 
         public ScmContext(DbConnection connection)
         {
@@ -42,6 +44,43 @@ namespace WidgetScmDataAccess
                 var partCommandId = (long) await command.ExecuteScalarAsync();
 
                 partCommand.Id = (int) partCommandId;
+            }
+        }
+
+        public async Task<IEnumerable<PartCommand>> GetPartCommands()
+        {
+            using (var command = _connection.CreateCommand())
+            {
+                command.CommandText = 
+                    @"SELECT Id, PartTypeid, Count, Command
+                    FROM PartCommand
+                    ORDER BY Id";
+                
+                using (var reader = await command.ExecuteReaderAsync().ConfigureAwait(false))
+                {
+                    var partCommands = new List<PartCommand>();
+
+                    while (await reader.ReadAsync().ConfigureAwait(false))
+                    {
+                        var pc = new PartCommand()
+                        {
+                            Id = reader.GetInt32(0),
+                            PartTypeId = reader.GetInt32(1),
+                            PartCount = reader.GetInt32(2)
+                        };
+
+                        if (Enum.TryParse<PartCountOperation>(reader.GetString(3), out PartCountOperation operation))
+                        {
+                            pc.Command = operation;
+                        }
+
+                        pc.Part = Parts.Single(p => p.Id == pc.PartTypeId);
+
+                        partCommands.Add(pc);
+                    }
+
+                    return partCommands;
+                }
             }
         }
 
@@ -87,11 +126,11 @@ namespace WidgetScmDataAccess
                     @"SELECT PartTypeId, Count, OrderThreshold
                     FROM InventoryItem";
 
-                using (var reader = await command.ExecuteReaderAsync())
+                using (var reader = await command.ExecuteReaderAsync().ConfigureAwait(false))
                 {
                     var items = new List<InventoryItem>();
 
-                    while (await reader.ReadAsync())
+                    while (await reader.ReadAsync().ConfigureAwait(false))
                     {
                         var partId = reader.GetInt32(0);
 
