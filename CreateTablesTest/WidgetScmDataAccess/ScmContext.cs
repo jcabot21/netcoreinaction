@@ -27,6 +27,57 @@ namespace WidgetScmDataAccess
 
         public DbTransaction BeginTransaction() => _connection.BeginTransaction();
 
+        public async Task CreateOrder(Order order)
+        {
+            using (var transaction = BeginTransaction())
+            {
+                try
+                {
+                    using (var orderCommand = _connection.CreateCommand())
+                    using (var emailCommand = _connection.CreateCommand())
+                    {
+                        orderCommand.Transaction = transaction;
+                        emailCommand.Transaction = transaction;
+
+                        orderCommand.CommandText = 
+                            @"INSERT INTO [Order]
+                            (SupplierId, PartTypeId, PartCount, PlacedDate)
+                            VALUES
+                            (@supplierId, @partTypeId, @partCount, @placedDate);
+                            SELECT last_insert_rowid();";
+                        
+                        AddParameter(orderCommand, "@supplierId", order.SupplierId);
+                        AddParameter(orderCommand, "@partTypeId", order.PartTypeId);
+                        AddParameter(orderCommand, "@partCount", order.PartCount);
+                        AddParameter(orderCommand, "@placedDate", order.PlacedDate);
+
+                        var orderId = (long) await orderCommand.ExecuteScalarAsync();
+
+                        order.Id = (int) orderId;
+
+                        emailCommand.CommandText = 
+                            @"INSERT INTO SendEmailCommand
+                            ([To], Subject, Body)
+                            VALUES
+                            (@to, @subject, @body)";
+                        
+                        AddParameter(emailCommand, "@to", order.Supplier.Email);
+                        AddParameter(emailCommand, "@subject", $"ORder #{order.Id} for {order.Part.Name}");
+                        AddParameter(emailCommand, "@body", $"Please send {order.PartCount} items of {order.Part.Name} to Widget Corp");
+
+                        await emailCommand.ExecuteNonQueryAsync();
+
+                        transaction.Commit();
+                    }
+                }
+                catch 
+                {
+                    transaction.Rollback();
+                    throw;
+                }
+            }
+        }
+
         public async Task UpdateInventoryItem(int partTypeId, int count, DbTransaction transaction)
         {
             using (var command = _connection.CreateCommand())
