@@ -50,6 +50,8 @@ namespace SqliteScmTest
                 , Connection);
 
             command.ExecuteNonQuery();
+
+            // TODO: Add the table for part commands
         }
 
         public void Dispose()

@@ -1,6 +1,7 @@
 using Xunit;
 using WidgetScmDataAccess;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace SqliteScmTest
 {
@@ -40,9 +41,36 @@ namespace SqliteScmTest
             var part = _context.Parts.First();
             var inventory = _context.Inventory.First();
 
-            Assert.Equal(part.Id, inventory.ParTypeId);
+            Assert.Equal(part.Id, inventory.PartTypeId);
             Assert.Equal(100, inventory.Count);
             Assert.Equal(10, inventory.OrderThreshold);
+        }
+
+        [Fact]
+        public async Task TestPartCommands()
+        {
+            var item = _context.Inventory.First();
+            var startCount = item.Count;
+
+            await _context.CreatePartCommand(new PartCommand()
+            {
+                PartTypeId = item.PartTypeId,
+                PartCount = 10,
+                Command = PartCountOperation.Add
+            });
+
+            await _context.CreatePartCommand(new PartCommand()
+            {
+                PartTypeId = item.PartTypeId,
+                PartCount = 5,
+                Command = PartCountOperation.Remove
+            });
+
+            var inventory = new Inventory(_context);
+
+            await inventory.UpdateInventory();
+
+            Assert.Equal(startCount + 5, item.Count);
         }
     }
 }

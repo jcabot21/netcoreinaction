@@ -25,6 +25,34 @@ namespace WidgetScmDataAccess
             _inventory = new Lazy<IEnumerable<InventoryItem>>(() => ReadInventory().Result);
         }
 
+        public async Task UpdateInventoryItem(int partTypeId, int count)
+        {
+            using (var command = _connection.CreateCommand())
+            {
+                command.CommandText = 
+                    @"UPDATE InventoryItem
+                    SET Count=@count
+                    WHERE PartTypeId=@partTypeId";
+                
+                AddParameter(command, "@count", count);
+                AddParameter(command, "@partTypeId", partTypeId);
+
+                await command.ExecuteNonQueryAsync();
+            }
+        }
+
+        public async Task DeletePartCommand(int id)
+        {
+            using (var command = _connection.CreateCommand())
+            {
+                command.CommandText = "DELETE FROM PartCommand WHERE Id=@id";
+
+                AddParameter(command, "@id", id);
+
+                await command.ExecuteNonQueryAsync();
+            }
+        }
+
         public async Task CreatePartCommand(PartCommand partCommand)
         {
             using (var command = _connection.CreateCommand())
@@ -136,7 +164,7 @@ namespace WidgetScmDataAccess
 
                         items.Add(new InventoryItem()
                         {
-                            ParTypeId = partId,
+                            PartTypeId = partId,
                             Count = reader.GetInt32(1),
                             OrderThreshold = reader.GetInt32(2),
                             PartType = Parts.Single(p => p.Id == partId)
