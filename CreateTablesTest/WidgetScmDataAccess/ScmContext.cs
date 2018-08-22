@@ -25,10 +25,17 @@ namespace WidgetScmDataAccess
             _inventory = new Lazy<IEnumerable<InventoryItem>>(() => ReadInventory().Result);
         }
 
-        public async Task UpdateInventoryItem(int partTypeId, int count)
+        public DbTransaction BeginTransaction() => _connection.BeginTransaction();
+
+        public async Task UpdateInventoryItem(int partTypeId, int count, DbTransaction transaction)
         {
             using (var command = _connection.CreateCommand())
             {
+                if (transaction != null) 
+                {
+                    command.Transaction = transaction;
+                }
+
                 command.CommandText = 
                     @"UPDATE InventoryItem
                     SET Count=@count
@@ -41,10 +48,15 @@ namespace WidgetScmDataAccess
             }
         }
 
-        public async Task DeletePartCommand(int id)
+        public async Task DeletePartCommand(int id, DbTransaction transaction)
         {
             using (var command = _connection.CreateCommand())
             {
+                if (transaction != null) 
+                {
+                    command.Transaction = transaction;
+                }
+
                 command.CommandText = "DELETE FROM PartCommand WHERE Id=@id";
 
                 AddParameter(command, "@id", id);

@@ -17,6 +17,7 @@ namespace WidgetScmDataAccess
             foreach (var cmd in await _context.GetPartCommands())
             {
                 var item = _context.Inventory.Single(i => i.PartTypeId == cmd.PartTypeId);
+                var oldCount = item.Count;
 
                 if (cmd.Command == PartCountOperation.Add)
                 {
@@ -27,8 +28,22 @@ namespace WidgetScmDataAccess
                     item.Count -= cmd.PartCount;
                 }
 
-                await _context.UpdateInventoryItem(item.PartTypeId, item.Count);
-                await _context.DeletePartCommand(cmd.Id);
+                using (var transaction = _context.BeginTransaction())
+                {
+                    try
+                    {
+                        await _context.UpdateInventoryItem(item.PartTypeId, item.Count, transaction);
+                        await _context.DeletePartCommand(cmd.Id, transaction);
+
+                        transaction.Commit();
+                    }
+                    catch 
+                    {
+                        transaction.Rollback();
+                        item.Count = oldCount;
+                        throw;
+                    }
+                }
             }
         }
     }
