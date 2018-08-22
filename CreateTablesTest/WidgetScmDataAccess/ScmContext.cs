@@ -14,15 +14,21 @@ namespace WidgetScmDataAccess
         private readonly Lazy<IEnumerable<InventoryItem>> _inventory;
         private readonly Lazy<IEnumerable<PartCommand>> _commands;
 
+        private readonly Lazy<IEnumerable<Supplier>> _suppliers;
+
         public IEnumerable<PartType> Parts => _parts.Value;
         public IEnumerable<InventoryItem> Inventory => _inventory.Value;
         public IEnumerable<PartCommand> Commands => _commands.Value;
+
+        public IEnumerable<Supplier> Suppliers => _suppliers.Value;
 
         public ScmContext(DbConnection connection)
         {
             _connection = connection;
             _parts = new Lazy<IEnumerable<PartType>>(() => ReadParts().Result);
             _inventory = new Lazy<IEnumerable<InventoryItem>>(() => ReadInventory().Result);
+            _commands = new Lazy<IEnumerable<PartCommand>>(() => GetPartCommands().Result);
+            _suppliers = new Lazy<IEnumerable<Supplier>>(() => ReadSuppliers().Result);
         }
 
         public DbTransaction BeginTransaction() => _connection.BeginTransaction();
@@ -135,6 +141,36 @@ namespace WidgetScmDataAccess
                 var partCommandId = (long) await command.ExecuteScalarAsync();
 
                 partCommand.Id = (int) partCommandId;
+            }
+        }
+
+        public async Task<IEnumerable<Supplier>> ReadSuppliers()
+        {
+            using (var command = _connection.CreateCommand())
+            {
+                command.CommandText = "SELECT Id, Name, Email, PartTypeId FROM Supplier";
+
+                using (var reader = await command.ExecuteReaderAsync().ConfigureAwait(false))
+                {
+                    var suppliers = new List<Supplier>();
+
+                    while (await reader.ReadAsync().ConfigureAwait(false))
+                    {
+                        var supplier = new Supplier()
+                        {
+                            Id = reader.GetInt32(0),
+                            Name = reader.GetString(1),
+                            Email = reader.GetString(2),
+                            PartTypeId = reader.GetInt32(3)
+                        };
+
+                        supplier.Part = Parts.Single(p => p.Id == supplier.PartTypeId);
+
+                        suppliers.Add(supplier);
+                    }
+
+                    return suppliers;
+                }
             }
         }
 
