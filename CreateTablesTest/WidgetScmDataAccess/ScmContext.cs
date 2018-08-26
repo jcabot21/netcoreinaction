@@ -125,6 +125,41 @@ namespace WidgetScmDataAccess
             }
         }
 
+        public async Task<IEnumerable<Order>> GetOrders()
+        {
+            using (var command = _connection.CreateCommand())
+            {
+                command.CommandText = 
+                    @"SELECT Id, SupplierId, PartTypeId, PartCount, PlacedDate, FulfilledDate
+                    FROM [Order]";
+
+                using (var reader = await command.ExecuteReaderAsync())
+                {
+                    var orders = new List<Order>();
+
+                    while (await reader.ReadAsync())
+                    {
+                        var order = new Order()
+                        {
+                            Id = reader.GetInt32(0),
+                            SupplierId = reader.GetInt32(1),
+                            PartTypeId = reader.GetInt32(2),
+                            PartCount = reader.GetInt32(3),
+                            PlacedDate = reader.GetDateTime(4),
+                            FulfilledDate = await reader.IsDBNullAsync(5) ? default(DateTime?) : reader.GetDateTime(5)
+                        };
+
+                        order.Part = Parts.Single(p => p.Id == order.PartTypeId);
+                        order.Supplier = Suppliers.First(s => s.Id == order.SupplierId);
+
+                        orders.Add(order);
+                    }
+
+                    return orders;
+                }
+            }
+        }
+
         public async Task UpdateInventoryItem(int partTypeId, int count, DbTransaction transaction)
         {
             using (var command = _connection.CreateCommand())

@@ -103,5 +103,40 @@ namespace SqliteScmTest
                 Assert.Equal(0, (long) await command.ExecuteScalarAsync());
             }
         }
+
+        [Fact]
+        public async Task TestUpdateInventory()
+        {
+            var item = _context.Inventory.First();
+            var totalCount = item.Count;
+
+            await _context.CreatePartCommand(new PartCommand()
+            {
+                PartTypeId = item.PartTypeId,
+                PartCount = totalCount,
+                Command = PartCountOperation.Remove
+            });
+
+            var inventory = new Inventory(_context);
+
+            await inventory.UpdateInventory();
+
+            var order = (await _context.GetOrders()).FirstOrDefault(
+                o => o.PartTypeId == item.PartTypeId && !o.FulfilledDate.HasValue
+            );
+
+            Assert.NotNull(order);
+
+            await _context.CreatePartCommand(new PartCommand()
+            {
+                PartTypeId = item.PartTypeId,
+                PartCount = totalCount,
+                Command = PartCountOperation.Add
+            });
+
+            await inventory.UpdateInventory();
+
+            Assert.Equal(totalCount, item.Count);
+        }
     }
 }
