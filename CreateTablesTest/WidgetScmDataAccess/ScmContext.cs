@@ -4,6 +4,7 @@ using System.Data;
 using System.Data.Common;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Transactions;
 
 namespace WidgetScmDataAccess
 {
@@ -32,6 +33,46 @@ namespace WidgetScmDataAccess
         }
 
         public DbTransaction BeginTransaction() => _connection.BeginTransaction();
+
+
+        // Testing TransactionScope, may not be available in SQLite
+        public async Task CreateOrderSysTx(Order order)
+        {
+            using (var transaction = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+            using (var orderCommand = _connection.CreateCommand())
+            using (var emailCommand = _connection.CreateCommand())
+            {
+                orderCommand.CommandText = 
+                            @"INSERT INTO [Order]
+                            (SupplierId, PartTypeId, PartCount, PlacedDate)
+                            VALUES
+                            (@supplierId, @partTypeId, @partCount, @placedDate);
+                            SELECT last_insert_rowid();";
+
+                AddParameter(orderCommand, "@supplierId", order.SupplierId);
+                AddParameter(orderCommand, "@partTypeId", order.PartTypeId);
+                AddParameter(orderCommand, "@partCount", order.PartCount);
+                AddParameter(orderCommand, "@placedDate", order.PlacedDate);
+
+                var orderId = (long) await orderCommand.ExecuteScalarAsync();
+
+                order.Id = (int) orderId;
+
+                emailCommand.CommandText = 
+                    @"INSERT INTO SendEmailCommand
+                    ([To], Subject, Body)
+                    VALUES
+                    (@to, @subject, @body)";
+                
+                AddParameter(emailCommand, "@to", order.Supplier.Email);
+                AddParameter(emailCommand, "@subject", $"ORder #{order.Id} for {order.Part.Name}");
+                AddParameter(emailCommand, "@body", $"Please send {order.PartCount} items of {order.Part.Name} to Widget Corp");
+
+                await emailCommand.ExecuteNonQueryAsync();
+
+                transaction.Complete();
+            }
+        }
 
         public async Task CreateOrder(Order order)
         {
