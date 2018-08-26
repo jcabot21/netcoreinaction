@@ -287,7 +287,7 @@ namespace WidgetScmDataAccess
             }
         }
 
-        private void AddParameter(DbCommand command, string name, object value)
+        public void AddParameter(DbCommand command, string name, object value)
         {
             if (value == null)
             {

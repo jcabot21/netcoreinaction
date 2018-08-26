@@ -73,6 +73,18 @@ namespace SqliteScmTest
             await inventory.UpdateInventory();
 
             Assert.Equal(startCount + 5, item.Count);
+
+            // Reset inventory
+            await _context.CreatePartCommand(new PartCommand()
+            {
+                PartTypeId = item.PartTypeId,
+                PartCount = 5,
+                Command = PartCountOperation.Remove
+            });
+
+            await inventory.UpdateInventory();
+
+            Assert.Equal(startCount, item.Count);
         }
 
         [Fact]
@@ -99,7 +111,10 @@ namespace SqliteScmTest
                 FulfilledDate IS NULL", _fixture.Connection
             ))
             {
-                // TODO: Add Parameters
+                _context.AddParameter(command, "@supplierId", order.SupplierId);
+                _context.AddParameter(command, "@partTypeId", order.PartTypeId);
+                _context.AddParameter(command, "@placedDate", order.PlacedDate);
+
                 Assert.Equal(0, (long) await command.ExecuteScalarAsync());
             }
         }

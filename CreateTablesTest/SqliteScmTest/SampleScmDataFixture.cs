@@ -113,7 +113,7 @@ namespace SqliteScmTest
                 @"INSERT INTO Supplier
                 (Name, Email, PartTypeId)
                 VALUES
-                ('Joe Supplier', 'joe@joesupplier.com', 0)",
+                ('Joe Supplier', 'joe@joesupplier.com', 1)",
                 Connection);
             
             command.ExecuteNonQuery();
