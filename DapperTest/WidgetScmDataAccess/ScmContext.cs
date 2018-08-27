@@ -1,10 +1,10 @@
+using Dapper;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Transactions;
 
 namespace WidgetScmDataAccess
 {
@@ -34,88 +34,37 @@ namespace WidgetScmDataAccess
 
         public DbTransaction BeginTransaction() => _connection.BeginTransaction();
 
-
-        // Testing TransactionScope, may not be available in SQLite
-        public async Task CreateOrderSysTx(Order order)
-        {
-            using (var transaction = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
-            using (var orderCommand = _connection.CreateCommand())
-            using (var emailCommand = _connection.CreateCommand())
-            {
-                orderCommand.CommandText = 
-                            @"INSERT INTO [Order]
-                            (SupplierId, PartTypeId, PartCount, PlacedDate)
-                            VALUES
-                            (@supplierId, @partTypeId, @partCount, @placedDate);
-                            SELECT last_insert_rowid();";
-
-                AddParameter(orderCommand, "@supplierId", order.SupplierId);
-                AddParameter(orderCommand, "@partTypeId", order.PartTypeId);
-                AddParameter(orderCommand, "@partCount", order.PartCount);
-                AddParameter(orderCommand, "@placedDate", order.PlacedDate);
-
-                var orderId = (long) await orderCommand.ExecuteScalarAsync();
-
-                order.Id = (int) orderId;
-
-                emailCommand.CommandText = 
-                    @"INSERT INTO SendEmailCommand
-                    ([To], Subject, Body)
-                    VALUES
-                    (@to, @subject, @body)";
-                
-                AddParameter(emailCommand, "@to", order.Supplier.Email);
-                AddParameter(emailCommand, "@subject", $"ORder #{order.Id} for {order.Part.Name}");
-                AddParameter(emailCommand, "@body", $"Please send {order.PartCount} items of {order.Part.Name} to Widget Corp");
-
-                await emailCommand.ExecuteNonQueryAsync();
-
-                transaction.Complete();
-            }
-        }
-
         public async Task CreateOrder(Order order)
         {
             using (var transaction = BeginTransaction())
             {
                 try
                 {
-                    using (var orderCommand = _connection.CreateCommand())
-                    using (var emailCommand = _connection.CreateCommand())
-                    {
-                        orderCommand.Transaction = transaction;
-                        emailCommand.Transaction = transaction;
+                    order.Id = (await _connection.QueryAsync<int>(
+                        @"INSERT INTO [Order]
+                        (SupplierId, PartTypeId, PartCount, PlacedDate)
+                        VALUES
+                        (@SupplierId, @PartTypeId, @PartCount, @PlacedDate);
+                        SELECT last_insert_rowid();",
+                        order,
+                        transaction
+                    )).First();
 
-                        orderCommand.CommandText = 
-                            @"INSERT INTO [Order]
-                            (SupplierId, PartTypeId, PartCount, PlacedDate)
-                            VALUES
-                            (@supplierId, @partTypeId, @partCount, @placedDate);
-                            SELECT last_insert_rowid();";
-                        
-                        AddParameter(orderCommand, "@supplierId", order.SupplierId);
-                        AddParameter(orderCommand, "@partTypeId", order.PartTypeId);
-                        AddParameter(orderCommand, "@partCount", order.PartCount);
-                        AddParameter(orderCommand, "@placedDate", order.PlacedDate);
+                    await _connection.ExecuteAsync(
+                        @"INSERT INTO SendEmailCommand
+                        ([To], Subject, Body)
+                        VALUES
+                        (@To, @Subject, @Body)",
+                        new 
+                        {
+                            To = order.Supplier.Email,
+                            Subject = $"Order #{order.Id} for {order.Part.Name}",
+                            Body = $"Please send {order.PartCount} items of {order.Part.Name} to Widget Corp"
+                        },
+                        transaction
+                    );
 
-                        var orderId = (long) await orderCommand.ExecuteScalarAsync();
-
-                        order.Id = (int) orderId;
-
-                        emailCommand.CommandText = 
-                            @"INSERT INTO SendEmailCommand
-                            ([To], Subject, Body)
-                            VALUES
-                            (@to, @subject, @body)";
-                        
-                        AddParameter(emailCommand, "@to", order.Supplier.Email);
-                        AddParameter(emailCommand, "@subject", $"ORder #{order.Id} for {order.Part.Name}");
-                        AddParameter(emailCommand, "@body", $"Please send {order.PartCount} items of {order.Part.Name} to Widget Corp");
-
-                        await emailCommand.ExecuteNonQueryAsync();
-
-                        transaction.Commit();
-                    }
+                    transaction.Commit();
                 }
                 catch 
                 {
@@ -222,32 +171,14 @@ namespace WidgetScmDataAccess
 
         public async Task<IEnumerable<Supplier>> ReadSuppliers()
         {
-            using (var command = _connection.CreateCommand())
+            var suppliers = await _connection.QueryAsync<Supplier>("SELECT * FROM Supplier");
+
+            foreach (var supplier in suppliers)
             {
-                command.CommandText = "SELECT Id, Name, Email, PartTypeId FROM Supplier";
-
-                using (var reader = await command.ExecuteReaderAsync().ConfigureAwait(false))
-                {
-                    var suppliers = new List<Supplier>();
-
-                    while (await reader.ReadAsync().ConfigureAwait(false))
-                    {
-                        var supplier = new Supplier()
-                        {
-                            Id = reader.GetInt32(0),
-                            Name = reader.GetString(1),
-                            Email = reader.GetString(2),
-                            PartTypeId = reader.GetInt32(3)
-                        };
-
-                        supplier.Part = Parts.Single(p => p.Id == supplier.PartTypeId);
-
-                        suppliers.Add(supplier);
-                    }
-
-                    return suppliers;
-                }
+                supplier.Part = Parts.Single(p => p.Id == supplier.PartTypeId);
             }
+
+            return suppliers;
         }
 
         public async Task<IEnumerable<PartCommand>> GetPartCommands()
@@ -321,58 +252,20 @@ namespace WidgetScmDataAccess
             command.Parameters.Add(p);
         }
 
-        private async Task<IEnumerable<InventoryItem>> ReadInventory()
+        private async Task<IEnumerable<InventoryItem>> ReadInventory() 
         {
-            using (var command = _connection.CreateCommand())
+            var inventory = await _connection.QueryAsync<InventoryItem>("SELECT * FROM InventoryItem");
+
+            foreach (var item in inventory)
             {
-                command.CommandText = 
-                    @"SELECT PartTypeId, Count, OrderThreshold
-                    FROM InventoryItem";
-
-                using (var reader = await command.ExecuteReaderAsync().ConfigureAwait(false))
-                {
-                    var items = new List<InventoryItem>();
-
-                    while (await reader.ReadAsync().ConfigureAwait(false))
-                    {
-                        var partId = reader.GetInt32(0);
-
-                        items.Add(new InventoryItem()
-                        {
-                            PartTypeId = partId,
-                            Count = reader.GetInt32(1),
-                            OrderThreshold = reader.GetInt32(2),
-                            PartType = Parts.Single(p => p.Id == partId)
-                        });
-                    }
-
-                    return items;
-                }
+                item.PartType = Parts.Single(p => p.Id == item.PartTypeId);
             }
+
+            return inventory;
         }
+            
 
-        private async Task<IEnumerable<PartType>> ReadParts()
-        {
-            using (var command = _connection.CreateCommand())
-            {
-                command.CommandText = "SELECT Id, Name FROM PartType";
-
-                using (var reader = await command.ExecuteReaderAsync().ConfigureAwait(false))
-                {
-                    var parts = new List<PartType>();
-
-                    while (await reader.ReadAsync().ConfigureAwait(false))
-                    {
-                        parts.Add(new PartType()
-                        {
-                            Id = reader.GetInt32(0),
-                            Name = reader.GetString(1)
-                        });
-                    }
-
-                    return parts;
-                }
-            }
-        }
+        private Task<IEnumerable<PartType>> ReadParts() => 
+            _connection.QueryAsync<PartType>("SELECT * FROM PartType");
     }
 }
