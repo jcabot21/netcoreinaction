@@ -20,7 +20,7 @@ namespace SqliteScmTest
         {
             var orders = await _context.GetOrders();
 
-            Assert.Equal(0, orders.Count());
+            Assert.Empty(orders);
 
             var supplier = _context.Suppliers.First();
             var part = _context.Parts.First();
