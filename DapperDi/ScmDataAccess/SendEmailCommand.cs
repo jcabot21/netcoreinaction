@@ -1,4 +1,4 @@
-namespace WidgetScmDataAccess
+namespace ScmDataAccess
 {
     public class SendEmailCommand
     {

@@ -1,6 +1,6 @@
 using System;
 
-namespace WidgetScmDataAccess
+namespace ScmDataAccess
 {
     public class Order
     {
