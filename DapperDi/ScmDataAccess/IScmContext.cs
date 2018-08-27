@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Data.Common;
+using System.Threading.Tasks;
 
 namespace ScmDataAccess
 {
@@ -11,16 +12,16 @@ namespace ScmDataAccess
 
         IEnumerable<Supplier> Suppliers { get; }
 
-        PartCommand[] GetPartCommands();
+        Task<PartCommand[]> GetPartCommands();
 
-        void DeletePartCommand(int id, DbTransaction transaction);
+        Task DeletePartCommand(int id, DbTransaction transaction);
 
-        void UpdateInventoryItem(int partTypeId, int count, DbTransaction transaction);
+        Task UpdateInventoryItem(int partTypeId, int count, DbTransaction transaction);
 
-        void CreateOrder(Order order);
+        Task CreateOrder(Order order);
 
         DbTransaction BeginTransaction();
 
-        IEnumerable<Order> GetOrders();
+        Task<IEnumerable<Order>> GetOrders();
     }
 }
