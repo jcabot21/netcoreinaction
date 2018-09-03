@@ -81,35 +81,74 @@ namespace MarkdownService
         {
             using (var request = CreateRequest(HttpMethod.Get, container, blob))
             {
+                var contentType = blob == null ? "text/xml" : "text/html"; // If null, we want list
+
                 using (var response = await _client.SendAsync(request))
                 {
-                    var markdown = await response.Content.ReadAsStringAsync();
+                    var responseContent = await response.Content.ReadAsStringAsync();
 
-                    return Content(_engine.Markup(markdown));
+                    if (blob != null) 
+                    {
+                        responseContent = _engine.Markup(responseContent);
+                    }
+
+                    return Content(responseContent, contentType);
                 }
             }
         }
 
         private HttpRequestMessage CreateRequest(HttpMethod verb, string container, string blob, long? contentLength = default(long?))
         {
-            var path = $"{container}/{blob}";
-            var rfcDate = DateTime.UtcNow.ToString("R");
-            var uri = new Uri(BlobEndpoint + path);
-            var request = new HttpRequestMessage(HttpMethod.Get, uri);
+            string path;
+            Uri uri;
 
-            request.Headers.Add("x-ms-blob-type", "BlockBlob");
+            if (blob != null) // Get blob
+            {
+                path = $"{container}/{blob}";
+                uri = new Uri(BlobEndpoint + path);
+            }
+            else if (container != null) // Get blobs in container
+            {
+                path = container;
+                uri = new Uri($"{BlobEndpoint}{path}?restype=container&comp=list");
+            }
+            else    // Get containers
+            {
+                path = string.Empty;
+                uri = new Uri($"{BlobEndpoint}?comp=list");
+            }
+
+            var rfcDate = DateTime.UtcNow.ToString("R");
+            var request = new HttpRequestMessage(verb, uri);
+
+            if (blob != null)
+            {
+                request.Headers.Add("x-ms-blob-type", "BlockBlob");
+            }
+
             request.Headers.Add("x-ms-date", rfcDate);
             request.Headers.Add("x-ms-version", ServiceVersion);
-            request.Headers.Add("Authorization", GetAuthHeader(verb.ToString().ToUpper(), path, rfcDate, contentLength));
+            request.Headers.Add("Authorization", GetAuthHeader(verb.ToString().ToUpper(), path, rfcDate, contentLength, blob == null, container == null));
 
             return request;
         }
 
-        private string GetAuthHeader(string verb, string path, string rfcDate, long? contentLength)
+        private string GetAuthHeader(string verb, string path, string rfcDate, long? contentLength, bool listBlob, bool listContainer)
         {
             var devStorage = BlobEndpoint.StartsWith("http://127.0.0.1:10000") ? $"/{AccountName}" : string.Empty;
             var signme = 
-                $"{verb}\n\n\n{contentLength}\n\n\n\n\n\n\n\n\nx-ms-blob-type:BlockBlob\nx-ms-date:{rfcDate}\nx-ms-version:{ServiceVersion}\n/{AccountName}/{path}";
+                $"{verb}\n\n\n{contentLength}\n\n\n\n\n\n\n\n\n" + 
+                (listBlob ? string.Empty : "x-ms-blob-type:BlockBlob\n") +
+                $"x-ms-date:{rfcDate}\nx-ms-version:{ServiceVersion}\n/{AccountName}/{path}";
+
+            if (listContainer)
+            {
+                signme += "\ncomp:list";
+            }
+            else
+            {
+                signme += "\ncomp:list\nrestype:container";
+            }
 
             using (var sha = new HMACSHA256(System.Convert.FromBase64String(AccountKey)))
             {
