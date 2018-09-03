@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.DocAsCode.MarkdownLite;
+using Microsoft.Extensions.Configuration;
 
 namespace MarkdownService
 {
@@ -22,6 +23,12 @@ namespace MarkdownService
             var engine = builder.CreateEngine(new HtmlRenderer());
 
             services.AddSingleton<IMarkdownEngine>(engine);
+
+            var configBuilder = new ConfigurationBuilder();
+
+            configBuilder.AddJsonFile("config.json", false); // false == this file is not optional, throw if not found
+
+            services.AddSingleton<IConfigurationRoot>(configBuilder.Build());
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
