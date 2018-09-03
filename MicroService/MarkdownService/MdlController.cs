@@ -41,6 +41,25 @@ namespace MarkdownService
             ServiceVersion = configRoot[nameof(ServiceVersion)];
         }
 
+        [HttpDelete]
+        public async Task<IActionResult> DeleteBlob(string container, string blob)
+        {
+            using (var request = CreateRequest(HttpMethod.Delete, container, blob))
+            {
+                using (var response = await _client.SendAsync(request))
+                {
+                    if (response.StatusCode == HttpStatusCode.Accepted)
+                    {
+                        return NoContent();
+                    }
+                    else
+                    {
+                        return Content(await response.Content.ReadAsStringAsync());
+                    }
+                }
+            }
+        }
+
         [HttpPost]
         public async Task<IActionResult> Convert()
         {
