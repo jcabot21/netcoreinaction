@@ -50,6 +50,31 @@ namespace MarkdownService
             }
         }
 
+        [HttpPut]
+        public async Task<IActionResult> PutBlob(string container, string blob)
+        {
+            var contentLength = Request.ContentLength;
+
+            using (var request = CreateRequest(HttpMethod.Put, container, blobl, contentLength))
+            {
+                request.Content = new StreamContent(Request.Body);
+
+                request.Content.Headers.Add("Content-Length", contentLength.ToString());
+
+                using (var response = await _client.SendAsync(request))
+                {
+                    if (response.StatusCode == HttpStatusCode.Created)
+                    {
+                        return Created($"{AccountName}/{container}/{blob}", null);
+                    }
+                    else
+                    {
+                        return Content(await response.Content.ReadAsStringAsync());
+                    }
+                }
+            }
+        }
+
         [HttpGet]
         public async Task<IActionResult> GetBlog(string container, string blob)
         {
@@ -64,7 +89,7 @@ namespace MarkdownService
             }
         }
 
-        private HttpRequestMessage CreateRequest(HttpMethod verb, string container, string blob)
+        private HttpRequestMessage CreateRequest(HttpMethod verb, string container, string blob, long? contentLength = default(long?))
         {
             var path = $"{container}/{blob}";
             var rfcDate = DateTime.UtcNow.ToString("R");
@@ -74,16 +99,16 @@ namespace MarkdownService
             request.Headers.Add("x-ms-blob-type", "BlockBlobl");
             request.Headers.Add("x-ms-date", rfcDate);
             request.Headers.Add("x-ms-version", ServiceVersion);
-            request.Headers.Add("Authorization", GetAuthHeader(verb.ToString().ToUpper(), path, rfcDate));
+            request.Headers.Add("Authorization", GetAuthHeader(verb.ToString().ToUpper(), path, rfcDate, contentLength));
 
             return request;
         }
 
-        private string GetAuthHeader(string verb, string path, string rfcDate)
+        private string GetAuthHeader(string verb, string path, string rfcDate, long? contentLength)
         {
             var devStorage = BlobEndpoint.StartsWith("http://127.0.0.1:10000") ? $"/{AccountName}" : string.Empty;
             var signme = 
-                $"GET\n\n\n\n\n\n\n\n\n\n\n\nx-ms-blob-type:BlockBlob\nx-ms-date:{rfcDate}\nx-ms-version:{ServiceVersion}\n/{AccountName}/{path}";
+                $"{verb}\n\n\n{contentLength}\n\n\n\n\n\n\n\n\nx-ms-blob-type:BlockBlob\nx-ms-date:{rfcDate}\nx-ms-version:{ServiceVersion}\n/{AccountName}/{path}";
 
             using (var sha = new HMACSHA256(System.Convert.FromBase64String(AccountKey)))
             {
