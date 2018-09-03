@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Net;
 using System.Net.Http;
 using System.Security.Cryptography;
 using System.Text;
@@ -55,7 +56,7 @@ namespace MarkdownService
         {
             var contentLength = Request.ContentLength;
 
-            using (var request = CreateRequest(HttpMethod.Put, container, blobl, contentLength))
+            using (var request = CreateRequest(HttpMethod.Put, container, blob, contentLength))
             {
                 request.Content = new StreamContent(Request.Body);
 
@@ -96,7 +97,7 @@ namespace MarkdownService
             var uri = new Uri(BlobEndpoint + path);
             var request = new HttpRequestMessage(HttpMethod.Get, uri);
 
-            request.Headers.Add("x-ms-blob-type", "BlockBlobl");
+            request.Headers.Add("x-ms-blob-type", "BlockBlob");
             request.Headers.Add("x-ms-date", rfcDate);
             request.Headers.Add("x-ms-version", ServiceVersion);
             request.Headers.Add("Authorization", GetAuthHeader(verb.ToString().ToUpper(), path, rfcDate, contentLength));
