@@ -1,25 +1,26 @@
 ﻿using System;
+using System.IO;
+using System.Net.Http;
+using System.Threading.Tasks;
 using Microsoft.DocAsCode.MarkdownLite;
 
 namespace MarkdownLiteTest
 {
     class Program
     {
-        static void Main(string[] args)
+        public static void Main(string[] args) => Run().Wait();
+
+        private static async Task Run()
         {
-            string source = @"
-Building Your First .NET Core Applications
-======
+            using (var client = new HttpClient())
+            {
+                var response = await client.PostAsync("http://localhost:5000",
+                    new StreamContent(new FileStream("test.md", FileMode.Open)));
 
-In this chapter, we will learn how to setup our development environment,
-create an application, and
-";
+                var markdown = await response.Content.ReadAsStringAsync();
 
-            var builder = new GfmEngineBuilder(new Options());
-            var engine = builder.CreateEngine(new HtmlRenderer());
-            var result = engine.Markup(source);
-
-            Console.WriteLine(result);
+                Console.WriteLine(markdown);
+            }
         }
     }
 }
