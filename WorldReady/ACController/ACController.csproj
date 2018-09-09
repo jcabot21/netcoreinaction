@@ -6,8 +6,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Resx Include="strings.restext" />
-    <EmbeddedResource Include="strings.resources" />
+    <Resx Include="*.restext" />
+    <EmbeddedResource Include="*.resources" />
   </ItemGroup>
 
   <Target Name="BuildResources">
