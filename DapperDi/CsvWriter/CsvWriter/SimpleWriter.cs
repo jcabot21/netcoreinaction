@@ -28,6 +28,11 @@ namespace CsvWriter
             _target.WriteLine();
         }
 
+        public void WriteLine(params string[] values)
+        {
+            _target.WriteLine(string.Join(",", values));
+        }
+
         public void WriteLine(Dictionary<string, string> values)
         {
             _target.Write(values[_columns[0]]);

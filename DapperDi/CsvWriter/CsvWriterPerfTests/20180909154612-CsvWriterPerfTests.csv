@@ -1,0 +1,2 @@
+"CsvWriterPerfTests.dll","Metric","Unit","Iterations","Average","STDEV.S","Min","Max"
+"CsvWriterPerfTests.PerfTests.BenchmarkSimpleWriter","Duration","msec","100","5.60624299645424","1.90238747475797","5.12129998207092","24.3084000349045"

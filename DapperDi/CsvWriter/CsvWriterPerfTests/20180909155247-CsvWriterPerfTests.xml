@@ -1,0 +1,227 @@
+<?xml version="1.0" encoding="utf-8"?>
+<assemblies>
+  <assembly name="CsvWriterPerfTests.dll">
+    <collection>
+      <test name="CsvWriterPerfTests.PerfTests.BenchmarkSimpleWriter" type="CsvWriterPerfTests.PerfTests" method="BenchmarkSimpleWriter">
+        <performance>
+          <metrics>
+            <Duration displayName="Duration" unit="msec" />
+          </metrics>
+          <iterations>
+            <iteration index="0" Duration="8.067999958992" />
+            <iteration index="1" Duration="5.76540005207062" />
+            <iteration index="2" Duration="7.24500000476837" />
+            <iteration index="3" Duration="10.0473999977112" />
+            <iteration index="4" Duration="9.85889995098114" />
+            <iteration index="5" Duration="10.590399980545" />
+            <iteration index="6" Duration="10.1128998994827" />
+            <iteration index="7" Duration="6.64869999885559" />
+            <iteration index="8" Duration="5.98149991035461" />
+            <iteration index="9" Duration="5.62979996204376" />
+            <iteration index="10" Duration="5.63689994812012" />
+            <iteration index="11" Duration="6.02330005168915" />
+            <iteration index="12" Duration="5.82649993896484" />
+            <iteration index="13" Duration="6.47749996185303" />
+            <iteration index="14" Duration="5.49820005893707" />
+            <iteration index="15" Duration="5.74590003490448" />
+            <iteration index="16" Duration="6.12699997425079" />
+            <iteration index="17" Duration="5.78839993476868" />
+            <iteration index="18" Duration="5.72909998893738" />
+            <iteration index="19" Duration="6.31840002536774" />
+            <iteration index="20" Duration="6.96159994602203" />
+            <iteration index="21" Duration="5.95389997959137" />
+            <iteration index="22" Duration="5.91300010681152" />
+            <iteration index="23" Duration="5.5324000120163" />
+            <iteration index="24" Duration="5.96009993553162" />
+            <iteration index="25" Duration="5.51379990577698" />
+            <iteration index="26" Duration="5.64690005779266" />
+            <iteration index="27" Duration="5.9918999671936" />
+            <iteration index="28" Duration="5.5025999546051" />
+            <iteration index="29" Duration="5.48900008201599" />
+            <iteration index="30" Duration="5.89040005207062" />
+            <iteration index="31" Duration="6.01510000228882" />
+            <iteration index="32" Duration="5.5440000295639" />
+            <iteration index="33" Duration="5.92460000514984" />
+            <iteration index="34" Duration="5.52539992332458" />
+            <iteration index="35" Duration="5.82620000839233" />
+            <iteration index="36" Duration="5.47070002555847" />
+            <iteration index="37" Duration="5.54589998722076" />
+            <iteration index="38" Duration="5.85640001296997" />
+            <iteration index="39" Duration="5.5161999464035" />
+            <iteration index="40" Duration="5.42280006408691" />
+            <iteration index="41" Duration="5.76719999313354" />
+            <iteration index="42" Duration="5.4261999130249" />
+            <iteration index="43" Duration="5.4239000082016" />
+            <iteration index="44" Duration="5.73360002040863" />
+            <iteration index="45" Duration="5.42079997062683" />
+            <iteration index="46" Duration="5.75079989433289" />
+            <iteration index="47" Duration="5.42770004272461" />
+            <iteration index="48" Duration="5.40769994258881" />
+            <iteration index="49" Duration="5.74160003662109" />
+            <iteration index="50" Duration="5.44229996204376" />
+            <iteration index="51" Duration="5.39409995079041" />
+            <iteration index="52" Duration="5.77259993553162" />
+            <iteration index="53" Duration="5.40810000896454" />
+            <iteration index="54" Duration="5.4041999578476" />
+            <iteration index="55" Duration="5.76190006732941" />
+            <iteration index="56" Duration="5.41629993915558" />
+            <iteration index="57" Duration="5.73849999904633" />
+            <iteration index="58" Duration="5.45349991321564" />
+            <iteration index="59" Duration="5.40900003910065" />
+            <iteration index="60" Duration="5.78990006446838" />
+            <iteration index="61" Duration="5.37929999828339" />
+            <iteration index="62" Duration="5.37129998207092" />
+            <iteration index="63" Duration="5.70980000495911" />
+            <iteration index="64" Duration="5.36100006103516" />
+            <iteration index="65" Duration="5.37889993190765" />
+            <iteration index="66" Duration="5.79799997806549" />
+            <iteration index="67" Duration="5.42159998416901" />
+            <iteration index="68" Duration="5.71389997005463" />
+            <iteration index="69" Duration="5.63999998569489" />
+            <iteration index="70" Duration="5.43729996681213" />
+            <iteration index="71" Duration="5.78599989414215" />
+            <iteration index="72" Duration="5.39129996299744" />
+            <iteration index="73" Duration="5.44669997692108" />
+            <iteration index="74" Duration="5.73830008506775" />
+            <iteration index="75" Duration="5.5058000087738" />
+            <iteration index="76" Duration="5.52009999752045" />
+            <iteration index="77" Duration="5.896399974823" />
+            <iteration index="78" Duration="5.60660004615784" />
+            <iteration index="79" Duration="5.80279994010925" />
+            <iteration index="80" Duration="5.49039995670319" />
+            <iteration index="81" Duration="5.4404000043869" />
+            <iteration index="82" Duration="5.76689994335175" />
+            <iteration index="83" Duration="5.3996000289917" />
+            <iteration index="84" Duration="5.41420006752014" />
+            <iteration index="85" Duration="5.72479999065399" />
+            <iteration index="86" Duration="5.38840007781982" />
+            <iteration index="87" Duration="5.44779992103577" />
+            <iteration index="88" Duration="5.75129997730255" />
+            <iteration index="89" Duration="5.41530001163483" />
+            <iteration index="90" Duration="5.74390006065369" />
+            <iteration index="91" Duration="5.43770003318787" />
+            <iteration index="92" Duration="5.41389989852905" />
+            <iteration index="93" Duration="5.79379999637604" />
+            <iteration index="94" Duration="5.43790006637573" />
+            <iteration index="95" Duration="5.43569993972778" />
+            <iteration index="96" Duration="5.81180000305176" />
+            <iteration index="97" Duration="5.49719989299774" />
+            <iteration index="98" Duration="5.45679998397827" />
+            <iteration index="99" Duration="5.77859997749329" />
+            <iteration index="100" Duration="5.42799997329712" />
+          </iterations>
+        </performance>
+      </test>
+      <test name="CsvWriterPerfTests.PerfTests.BenchmarkSimpleWriterToFile" type="CsvWriterPerfTests.PerfTests" method="BenchmarkSimpleWriterToFile">
+        <performance>
+          <metrics>
+            <Duration displayName="Duration" unit="msec" />
+          </metrics>
+          <iterations>
+            <iteration index="0" Duration="9.20500004291534" />
+            <iteration index="1" Duration="8.38559997081757" />
+            <iteration index="2" Duration="7.90180003643036" />
+            <iteration index="3" Duration="6.64710009098053" />
+            <iteration index="4" Duration="6.34200000762939" />
+            <iteration index="5" Duration="6.81299996376038" />
+            <iteration index="6" Duration="6.53060007095337" />
+            <iteration index="7" Duration="6.34179997444153" />
+            <iteration index="8" Duration="10.2588000297546" />
+            <iteration index="9" Duration="8.32440006732941" />
+            <iteration index="10" Duration="6.70829999446869" />
+            <iteration index="11" Duration="6.29999995231628" />
+            <iteration index="12" Duration="6.32080006599426" />
+            <iteration index="13" Duration="6.84789991378784" />
+            <iteration index="14" Duration="6.70609998703003" />
+            <iteration index="15" Duration="6.88239991664886" />
+            <iteration index="16" Duration="7.27770006656647" />
+            <iteration index="17" Duration="6.92260003089905" />
+            <iteration index="18" Duration="6.78869998455048" />
+            <iteration index="19" Duration="6.84409999847412" />
+            <iteration index="20" Duration="6.44010007381439" />
+            <iteration index="21" Duration="7.05970001220703" />
+            <iteration index="22" Duration="7.30299997329712" />
+            <iteration index="23" Duration="6.65069997310638" />
+            <iteration index="24" Duration="7.5081000328064" />
+            <iteration index="25" Duration="6.77810001373291" />
+            <iteration index="26" Duration="6.52249991893768" />
+            <iteration index="27" Duration="6.65759992599487" />
+            <iteration index="28" Duration="6.30909991264343" />
+            <iteration index="29" Duration="6.29709994792938" />
+            <iteration index="30" Duration="7.04139995574951" />
+            <iteration index="31" Duration="6.44809997081757" />
+            <iteration index="32" Duration="6.56939995288849" />
+            <iteration index="33" Duration="8.08390009403229" />
+            <iteration index="34" Duration="6.88250005245209" />
+            <iteration index="35" Duration="6.84730005264282" />
+            <iteration index="36" Duration="7.05529999732971" />
+            <iteration index="37" Duration="6.4760000705719" />
+            <iteration index="38" Duration="7.18529999256134" />
+            <iteration index="39" Duration="6.56659996509552" />
+            <iteration index="40" Duration="6.6923999786377" />
+            <iteration index="41" Duration="6.68229997158051" />
+            <iteration index="42" Duration="6.47549998760223" />
+            <iteration index="43" Duration="10.8858000040054" />
+            <iteration index="44" Duration="10.2606000900269" />
+            <iteration index="45" Duration="11.6682000160217" />
+            <iteration index="46" Duration="7.17219996452332" />
+            <iteration index="47" Duration="6.94740009307861" />
+            <iteration index="48" Duration="8.01450002193451" />
+            <iteration index="49" Duration="7.22099995613098" />
+            <iteration index="50" Duration="8.35580003261566" />
+            <iteration index="51" Duration="7.03299999237061" />
+            <iteration index="52" Duration="6.82920002937317" />
+            <iteration index="53" Duration="7.63480007648468" />
+            <iteration index="54" Duration="7.32949995994568" />
+            <iteration index="55" Duration="10.0568999052048" />
+            <iteration index="56" Duration="7.13109993934631" />
+            <iteration index="57" Duration="11.2764999866486" />
+            <iteration index="58" Duration="7.9954000711441" />
+            <iteration index="59" Duration="6.86619997024536" />
+            <iteration index="60" Duration="7.03519999980927" />
+            <iteration index="61" Duration="10.6999999284744" />
+            <iteration index="62" Duration="6.75010001659393" />
+            <iteration index="63" Duration="10.279000043869" />
+            <iteration index="64" Duration="6.95169997215271" />
+            <iteration index="65" Duration="7.55490005016327" />
+            <iteration index="66" Duration="6.7671000957489" />
+            <iteration index="67" Duration="7.18129992485046" />
+            <iteration index="68" Duration="8.410600066185" />
+            <iteration index="69" Duration="7.17460000514984" />
+            <iteration index="70" Duration="6.5900000333786" />
+            <iteration index="71" Duration="7.32369995117188" />
+            <iteration index="72" Duration="8.48089993000031" />
+            <iteration index="73" Duration="7.10460007190704" />
+            <iteration index="74" Duration="11.5101000070572" />
+            <iteration index="75" Duration="11.1574000120163" />
+            <iteration index="76" Duration="10.2190001010895" />
+            <iteration index="77" Duration="11.2292000055313" />
+            <iteration index="78" Duration="9.56930005550385" />
+            <iteration index="79" Duration="10.0189999341965" />
+            <iteration index="80" Duration="10.0870000123978" />
+            <iteration index="81" Duration="7.85399997234344" />
+            <iteration index="82" Duration="13.2853000164032" />
+            <iteration index="83" Duration="7.36120009422302" />
+            <iteration index="84" Duration="6.41680002212524" />
+            <iteration index="85" Duration="6.94429993629456" />
+            <iteration index="86" Duration="8.33100008964539" />
+            <iteration index="87" Duration="9.72939991950989" />
+            <iteration index="88" Duration="6.6007000207901" />
+            <iteration index="89" Duration="6.67960000038147" />
+            <iteration index="90" Duration="10.0481998920441" />
+            <iteration index="91" Duration="11.9494999647141" />
+            <iteration index="92" Duration="7.51419997215271" />
+            <iteration index="93" Duration="6.83399999141693" />
+            <iteration index="94" Duration="6.33310008049011" />
+            <iteration index="95" Duration="8.68760001659393" />
+            <iteration index="96" Duration="7.20340001583099" />
+            <iteration index="97" Duration="11.3194999694824" />
+            <iteration index="98" Duration="7.13529992103577" />
+            <iteration index="99" Duration="6.70219993591309" />
+            <iteration index="100" Duration="6.8902999162674" />
+          </iterations>
+        </performance>
+      </test>
+    </collection>
+  </assembly>
+</assemblies>
