@@ -1,0 +1,5 @@
+"CsvWriterPerfTests.dll","Metric","Unit","Iterations","Average","STDEV.S","Min","Max"
+"CsvWriterPerfTests.PerfTests.BenchmarkSimpleWriter","Duration","msec","100","7.36701099991798","2.34222766935679","5.63619995117188","18.7120000123978"
+"CsvWriterPerfTests.PerfTests.BenchmarkSimpleWriterJoin","Duration","msec","100","1.58131400704384","0.199489417151878","1.38349997997284","2.30939996242523"
+"CsvWriterPerfTests.PerfTests.BenchmarkSimpleWriterToFile","Duration","msec","100","8.04528799295425","2.04535218010662","6.54970002174377","15.4112000465393"
+"CsvWriterPerfTests.PerfTests.BenchmarkSimpleWriterToFileJoin","Duration","msec","100","2.70919100403786","0.496134373880579","2.14069998264313","4.66540002822876"
