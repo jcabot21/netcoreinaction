@@ -17,9 +17,9 @@ namespace ACController
 
         public void LogStatus()
         {
-            _logger.LogInformation($"{_resources.GetString("ExhaustAirTemp")} {TempControl.ExhaustAirTemp} C");
-            _logger.LogInformation($"{_resources.GetString("CoolantTemp")} {TempControl.CoolantTemp} C");
-            _logger.LogInformation($"{_resources.GetString("OutsideAirTemp")} {TempControl.OutsideAirTemp} C");
+            _logger.LogInformation(string.Format(_resources.GetString("ExhaustAirTemp"), TempControl.ExhaustAirTemp));
+            _logger.LogInformation(string.Format(_resources.GetString("CoolantTemp"), TempControl.CoolantTemp));
+            _logger.LogInformation(string.Format(_resources.GetString("OutsideAirTemp"), TempControl.OutsideAirTemp));
         }
     }
 }

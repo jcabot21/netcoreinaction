@@ -1,3 +1,3 @@
-ExhaustAirTemp=Temp del aire del extractor:
-CoolantTemp=Coolant Temp:
-OutsideAirTemp=Outside Air Temp:
+ExhaustAirTemp=Temp del aire del extractor: {0} C 
+CoolantTemp=Coolant Temp: {0} C
+OutsideAirTemp=Outside Air Temp: {0} C
